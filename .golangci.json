@@ -1,0 +1,80 @@
+{
+	"linters": {
+		"enable": [
+			"errcheck",
+			"gosimple",
+			"govet",
+			"ineffassign",
+			"staticcheck",
+			"unused",
+			"nilnil",
+			"tagalign",
+			"gocritic",
+			"goconst"
+		],
+		"disable": [
+			"typecheck"
+		]
+	},
+	"linters-settings": {
+		"gosimple": {
+			"checks": [
+				"all",
+				"-ST1000",
+				"-ST1003",
+				"-ST1016",
+				"-ST1020",
+				"-ST1021",
+				"-ST1022",
+				"-SA5008"
+			]
+		},
+		"staticcheck": {
+			"checks": [
+				"all",
+				"-ST1000",
+				"-ST1003",
+				"-ST1016",
+				"-ST1020",
+				"-ST1021",
+				"-ST1022",
+				"-SA5008"
+			]
+		},
+		"nilnil": {
+		},
+		"tagalign": {
+			"align": true,
+			"sort": true,
+			"order": [
+				"json",
+				"db",
+				"dbtype",
+				"yaml",
+				"yml",
+				"xml",
+				"toml",
+				"csv",
+				"tsv",
+				"mapstructure",
+				"binding",
+				"validate"
+			],
+			"strict": true
+		},
+		"tagliatelle": {
+			"case": {
+				"rules": {
+					"db": "lower",
+					"dbtype": "lower"
+				}
+			}
+		},
+		"gocritic": {
+			"disabled-checks": [
+				"ifElseChain",
+				"commentFormatting"
+			]
+		}
+	}
+}

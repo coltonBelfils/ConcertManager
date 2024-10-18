@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form</title>
+</head>
+<body>
+<h1>Make a concert!</h1>
+<p>Logged in as {{.User.Username}}</p>
+<p>Click <a href="logout">here</a> to logout.</p>
+{{ if eq (dStr .User.Username) "admin" }}
+    <p>Click <a href="new-user">here</a> to create a new user</p>
+{{ end }}
+<hr/>
+<form id="concert" action="form" method="post">
+    <h3>Artists</h3>
+    <div style="max-height: 400px; overflow: scroll">
+        {{range .Artists}}
+            <div>
+                <input type="radio" id="selectedArtist-{{.Id}}" name="selectedArtist" form="concert"
+                       value="{{.Id}}" onchange="(() => {
+                           document.getElementById('newArtistField').style.display = 'none';
+                   })()">
+                <label for="selectedArtist-{{.Id}}">{{.Name}}</label>
+            </div>
+        {{end}}
+        <div>
+            <input type="radio" id="selectedArtist-newArtist" name="selectedArtist" form="concert"
+                   value="newArtist" onchange="(() => {
+                       document.getElementById('newArtistField').style.display = 'block';
+                   })()">
+            <label for="selectedArtist-newArtist">New Artist</label>
+        </div>
+        <script>
+            addEventListener("load", (() => {
+                let newArtistRadio = document.getElementById("selectedArtist-newArtist")
+                if (newArtistRadio.checked) {
+                    document.getElementById("newArtistField").style.display = "block"
+                }
+            }))
+        </script>
+        <div id="newArtistField" style="display: none">
+            <label for="newArtist">New Artist</label>
+            <input type="text" id="newArtist" name="newArtist" form="concert">
+        </div>
+    </div>
+    <h3>Venues</h3>
+    <div style="max-height: 400px; overflow: scroll">
+        {{range .Venues }}
+            <div>
+                <input type="radio" id="selectedVenue-{{.Id}}" name="selectedVenue" form="concert"
+                       value="{{.Id}}" onchange="(() => {
+                       document.getElementById('newVenueField').style.display = 'none';
+                   })()">
+                <label for="selectedVenue-{{.Id}}">{{.Name}}</label>
+            </div>
+        {{end}}
+        <div>
+            <input type="radio" id="selectedVenue-newVenue" name="selectedVenue" form="concert"
+                   value="newVenue" onchange="(() => {
+                       document.getElementById('newVenueField').style.display = 'block';
+                   })()">
+            <label for="selectedVenue-newVenue">New Venue</label>
+        </div>
+        <script>
+            addEventListener("load", (() => {
+                let newVenueRadio = document.getElementById("selectedVenue-newVenue")
+                if (newVenueRadio.checked) {
+                    document.getElementById("newVenueField").style.display = "block"
+                }
+            }))
+        </script>
+        <div id="newVenueField" style="display: none">
+            <div>
+                <label for="venueName">Name:</label>
+                <input type="text" id="venueName" name="venueName" form="concert">
+            </div>
+            <div>
+                <label for="venueCity">City:</label>
+                <input type="text" id="venueCity" name="venueCity" form="concert">
+            </div>
+            <div>
+                <label for="venueCountry">Country:</label>
+                <input type="text" id="venueCountry" name="venueCountry" form="concert">
+            </div>
+        </div>
+    </div>
+    <h3>Concert</h3>
+    <div>
+        <div>
+            <label for="concertUrl">Url:</label>
+            <input type="url" id="concertUrl" name="concertUrl" form="concert" onchange="(() => {
+            let url = document.getElementById('concertUrl').value;
+            fetch(`/validurl?url=${url}`).then(r => {
+                if (r.ok) {
+                    document.getElementById('url-result').innerText = 'Url is valid';
+                } else {
+                    document.getElementById('url-result').innerText = 'Url is invalid';
+                }
+            }).catch(() => {
+                document.getElementById('url-result').innerText = 'Url is invalid';
+            })
+        })()">
+            <span id="url-result"></span>
+        </div>
+        <div>
+            <label for="concertDate">Date</label>
+            <input type="date" id="concertDate" name="concertDate" form="concert">
+        </div>
+        <div>
+            <label for="setlistfm-url">setlist.fm Url:</label>
+            <input type="url" id="setlistfm-url" name="setlistfm-url" form="concert" onchange="(() => {
+            let setlistfmUrl = document.getElementById('setlistfm-url').value;
+            if (!setlistfmUrl.match(/https:\/\/(www\.)?setlist.fm\/setlist\/.*\/.*\/.*\.html/)) {
+                document.getElementById('setlistfm-url-result').innerText = 'Url is invalid. Format: https://(www.)setlist.fm/setlist/artist-name/year/venue-name.html';
+                return;
+            }
+            fetch(`/validurl?url=${setlistfmUrl}`).then(r => {
+                if (r.ok) {
+                    document.getElementById('setlistfm-url-result').innerText = 'Url is valid';
+                } else {
+                    document.getElementById('setlistfm-url-result').innerText = 'Url is invalid';
+                }
+            }).catch(() => {
+                document.getElementById('setlistfm-url-result').innerText = 'Url is invalid';
+            })
+        })()">
+            <span id="setlistfm-url-result"></span>
+        </div>
+    </div>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+</body>
+</html>

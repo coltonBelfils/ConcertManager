@@ -1,0 +1,4 @@
+cookieCheckSalt=
+passwordSalt=
+adminPassword=
+appRoot=
