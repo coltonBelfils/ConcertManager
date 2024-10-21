@@ -49,6 +49,7 @@ func main() {
 		panic("the admin user already exists and for one reason or another the current password does not match the ADMIN_PASSWORD env var")
 	}
 
+	// Move the funcs for these to the /routes package
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/new-user", newUser)

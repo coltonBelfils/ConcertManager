@@ -1,4 +1,0 @@
-cookieCheckSalt=
-passwordSalt=
-adminPassword=
-appRoot=
