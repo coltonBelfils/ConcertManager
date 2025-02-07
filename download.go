@@ -44,8 +44,12 @@ func Download(dbI *dbInterface.DbInterface, concert *dataTypes.Concert) error {
 	}
 	venueName = strings.ReplaceAll(venueName, "/", "-")
 
+	//old path
 	runPath := appPath.Path(fmt.Sprintf("%s/%s %s/01 - %s %s", artistName, concert.Date.Format(time.DateOnly), venueName, concert.Date.Format(time.DateOnly), venueName))
 	runPath = strings.TrimSpace(runPath)
+
+	//new path. See File Structure.monopic
+	//runPath = appPath.Path(fmt.Sprintf("storage"))
 
 	if concert.Url == nil {
 		return errors.New("concert url is nil")

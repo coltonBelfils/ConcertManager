@@ -31,7 +31,7 @@ func Path(path string) string {
 				panic(errors.Wrap(getWDErr, "error getting working directory"))
 			}
 			fmt.Printf("working directory: %s\n", workingDir)
-			base = fmt.Sprintf("%s/ConcertGetApp/", workingDir)
+			base = fmt.Sprintf("%s/", workingDir)
 		}
 
 		if !strings.HasSuffix(base, "/") {
@@ -48,7 +48,8 @@ func Path(path string) string {
 
 	makePathErr := os.MkdirAll(makePath, os.ModePerm)
 	if makePathErr != nil {
-		panic(errors.Wrapf(makePathErr, "error creating path %s", path[:strings.LastIndex(path, "/")]))
+		fmt.Printf("last index: %d\n", strings.LastIndex(path, "/"))
+		panic(errors.Wrapf(makePathErr, "error creating path %s", makePath))
 	}
 
 	return base + path

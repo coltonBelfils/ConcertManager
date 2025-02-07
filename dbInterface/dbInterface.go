@@ -53,6 +53,7 @@ create table if not exists concert
     venueId  integer                           not null
         references venue (id),
     url      TEXT unique,
+    urlResolves integer default true not null,
     date     integer default current_timestamp not null,
     setlistFmUrl TEXT unique,
     processedStage int default 0 not null,

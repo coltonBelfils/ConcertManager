@@ -10,10 +10,34 @@ fi
 echo "Running tests, if applicable"
 go test -v ./... | grep -v "no test files"
 
+rm ./ConcertGetApp
+
 echo "Building"
-go build
+go build -o ConcertGetApp
 
 chmod +rwx ./ConcertGetApp
+
+if [ "$(which ./yt-dlp)" = "./yt-dlp not found" ]; then
+  curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp > /dev/null 2>&1
+  chmod a+rx ./yt-dlp > /dev/null
+  if [ "$(which ./yt-dlp)" = "./yt-dlp not found" ]; then
+    echo "Attempted to download yt-dlp but failed."
+    exit 1
+  fi
+else
+  ./yt-dlp -U > /dev/null
+fi
+
+alias yt-dlp='./yt-dlp'
+
+version=$(yt-dlp --version)
+
+if [ $? -ne 0 ]; then
+  echo "yt-dlp not found in appropriate directory. It should be there and should have already been downloaded in the script if it was not there."
+  exit 1
+fi
+
+echo "yt-dlp version: $version"
 
 config_file="./conf.txt"
 
@@ -42,5 +66,16 @@ if [ -z "$APP_ROOT" ]; then
   exit 1
 fi
 
+# Code signing
+codesign --force --deep --sign - ./ConcertGetApp > /dev/null 2>&1
+
 echo "Running"
-COOKIE_CHECK_SALT=$COOKIE_CHECK_SALT PASSWORD_SALT=$PASSWORD_SALT ADMIN_PASSWORD=$ADMIN_PASSWORD APP_ROOT=$APP_ROOT ./ConcertGetApp
+export COOKIE_CHECK_SALT PASSWORD_SALT ADMIN_PASSWORD APP_ROOT
+./ConcertGetApp 2>&1
+
+# COOKIE_CHECK_SALT=$COOKIE_CHECK_SALT PASSWORD_SALT=$PASSWORD_SALT ADMIN_PASSWORD=$ADMIN_PASSWORD APP_ROOT=$APP_ROOT ./ConcertGetApp 2>&1 | tee error.log # doesn't work
+# COOKIE_CHECK_SALT=$COOKIE_CHECK_SALT PASSWORD_SALT=$PASSWORD_SALT ADMIN_PASSWORD=$ADMIN_PASSWORD APP_ROOT=$APP_ROOT go run . 2>&1 # works
+
+if [ $? -ne 0 ]; then
+  echo "ConcertGetApp likely panicked and exited with a non-zero exit code"
+fi

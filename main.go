@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ConcertGetApp/appPath"
 	"ConcertGetApp/dataTypes"
 	"ConcertGetApp/dbInterface"
 	"ConcertGetApp/htmlTemplate"
@@ -18,6 +19,17 @@ import (
 var dbI *dbInterface.DbInterface
 
 func main() {
+	fmt.Printf("test\n")
+	fmt.Printf("Storage at: %s\n", appPath.Path("storage"))
+	_, statErr := os.Stat(appPath.Path("storage"))
+	if os.IsNotExist(statErr) {
+		fmt.Printf("Making storage at %s", appPath.Path("storage"))
+		makeStorageErr := os.Mkdir(appPath.Path("storage"), 0775)
+		if makeStorageErr != nil {
+			panic(errors.Wrap(makeStorageErr, fmt.Sprintf("Attempted to make directory at %s. Failed.", appPath.Path("storage"))))
+		}
+	}
+
 	var newErr error
 	dbI, newErr = dbInterface.New()
 	if newErr != nil {

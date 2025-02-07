@@ -3,4 +3,4 @@ passwordSalt=
 adminPassword=
 appRoot=
 
-(the real version of this file is called conf.txt)
+(the real version of this file is called conf.txt and needs to have the variables filled in)
