@@ -2,7 +2,7 @@ package appPath
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 	"os"
 	"strings"
 	"sync"

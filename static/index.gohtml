@@ -1,11 +1,17 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Form</title>
 </head>
 <body>
-<h1>Welcome!</h1>
-<p>Click <a href="form.gohtml">here</a> to teleport.</p>
+<h1>Make a concert!</h1>
+<p>Logged in as {{.User.Username}}</p>
 <p>Click <a href="logout">here</a> to logout.</p>
+{{ if eq (dStr .User.Username) "admin" }}
+    <p>Click <a href="new-user">here</a> to create a new user</p>
+{{ end }}
+<hr/>
+
 </body>
 </html>

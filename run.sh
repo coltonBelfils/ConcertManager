@@ -17,6 +17,9 @@ go build -o ConcertGetApp
 
 chmod +rwx ./ConcertGetApp
 
+# Code signing
+codesign --force --deep --sign - ./ConcertGetApp > /dev/null 2>&1
+
 if [ "$(which ./yt-dlp)" = "./yt-dlp not found" ]; then
   curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp > /dev/null 2>&1
   chmod a+rx ./yt-dlp > /dev/null
@@ -65,9 +68,6 @@ if [ -z "$APP_ROOT" ]; then
   echo "Error: appRoot is missing from the config file"
   exit 1
 fi
-
-# Code signing
-codesign --force --deep --sign - ./ConcertGetApp > /dev/null 2>&1
 
 echo "Running"
 export COOKIE_CHECK_SALT PASSWORD_SALT ADMIN_PASSWORD APP_ROOT

@@ -4,8 +4,8 @@ import (
 	"ConcertGetApp/appPath"
 	"ConcertGetApp/dataTypes"
 	"database/sql"
+	"github.com/cockroachdb/errors"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/pkg/errors"
 	"time"
 )
 

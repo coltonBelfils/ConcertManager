@@ -5,7 +5,7 @@ import (
 	"ConcertGetApp/dataTypes"
 	"ConcertGetApp/dbInterface"
 	"fmt"
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 	"os/exec"
 	"strings"
 	"time"
