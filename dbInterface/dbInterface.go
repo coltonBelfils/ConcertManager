@@ -54,7 +54,7 @@ create table if not exists concert
         references venue (id),
     url      TEXT unique,
     urlResolves integer default true not null,
-    date     integer default current_timestamp not null,
+    date     integer default (unixepoch()) not null,
     setlistFmUrl TEXT unique,
     processedStage int default 0 not null,
     filePath TEXT,
@@ -71,7 +71,14 @@ create table if not exists user
     username     TEXT unique not null,
     passwordHash BLOB        not null
 )
-    strict;`)
+    strict;
+
+-- FK Constraints are not on by default and must be turned on for every connection.
+-- There does not appear to be a way to do it at table creation time.
+-- That is why the following line is here.
+-- Sqlite will happily ignore FKs normally.
+-- Do not trust in FKs for safe deletion!
+PRAGMA foreign_keys = ON;`)
 	if execErr != nil {
 		return nil, errors.Wrap(execErr, "error creating tables")
 	}
@@ -122,6 +129,66 @@ func (d *DbInterface) GetConcerts() ([]dataTypes.Concert, error) {
 		c.Date = &date
 
 		concerts = append(concerts, c)
+	}
+
+	return concerts, nil
+}
+
+func (d *DbInterface) GetConcertsByArtist(artistId int) ([]*dataTypes.Concert, error) {
+	rows, queryErr := d.db.Query("SELECT * from concert where artistId = ?;", artistId)
+	if queryErr != nil {
+		return nil, errors.Wrap(queryErr, "error querying for concerts")
+	}
+
+	var concerts []*dataTypes.Concert
+	for rows.Next() {
+		var (
+			c       dataTypes.Concert
+			dateRaw int
+		)
+		scanErr := rows.Scan(&c.Id, &c.ArtistId, &c.VenueId, &c.Url, &dateRaw, &c.SetlistFMUrl, &c.ProcessedStage, &c.FilePath, &c.AddedBy)
+		if scanErr != nil {
+			return nil, errors.Wrap(scanErr, "error scanning concert")
+		}
+
+		date := time.Unix(int64(dateRaw), 0)
+		c.Date = &date
+
+		concerts = append(concerts, &c)
+	}
+
+	if len(concerts) == 0 {
+		return nil, nil //nolint:nilnil
+	}
+
+	return concerts, nil
+}
+
+func (d *DbInterface) GetConcertsByVenue(venueId int) ([]*dataTypes.Concert, error) {
+	rows, queryErr := d.db.Query("SELECT * from concert where venueId = ?;", venueId)
+	if queryErr != nil {
+		return nil, errors.Wrap(queryErr, "error querying for concerts")
+	}
+
+	var concerts []*dataTypes.Concert
+	for rows.Next() {
+		var (
+			c       dataTypes.Concert
+			dateRaw int
+		)
+		scanErr := rows.Scan(&c.Id, &c.ArtistId, &c.VenueId, &c.Url, &dateRaw, &c.SetlistFMUrl, &c.ProcessedStage, &c.FilePath, &c.AddedBy)
+		if scanErr != nil {
+			return nil, errors.Wrap(scanErr, "error scanning concert")
+		}
+
+		date := time.Unix(int64(dateRaw), 0)
+		c.Date = &date
+
+		concerts = append(concerts, &c)
+	}
+
+	if len(concerts) == 0 {
+		return nil, nil //nolint:nilnil
 	}
 
 	return concerts, nil
@@ -253,6 +320,26 @@ func singleArtistRowsHelper(rows *sql.Rows) (*dataTypes.Artist, error) {
 	return artists[0], nil
 }
 
+//nolint:unused
+func artistRowsHelper(rows *sql.Rows) ([]*dataTypes.Artist, error) {
+	var artists []*dataTypes.Artist
+	for rows.Next() {
+		a := dataTypes.Artist{}
+		scanErr := rows.Scan(&a.Id, &a.Name, &a.AddedBy)
+		if scanErr != nil {
+			return nil, errors.Wrap(scanErr, "error scanning artist")
+		}
+
+		artists = append(artists, &a)
+	}
+
+	if len(artists) == 0 {
+		return nil, nil //nolint:nilnil
+	}
+
+	return artists, nil
+}
+
 func (d *DbInterface) GetVenue(id int) (*dataTypes.Venue, error) {
 	rows, queryErr := d.db.Query(`SELECT * from venue where id = ?`, id)
 	if queryErr != nil {
@@ -323,6 +410,24 @@ func (d *DbInterface) NewConcert(artistId int, venueId int, url string, date int
 	_, execErr := d.db.Exec("insert or replace into concert (artistId, venueId, url, date, setlistFmUrl, addedBy) values (?, ?, ?, ?, ?, ?);", artistId, venueId, url, date, setlistFmUrl, addedBy)
 	if execErr != nil {
 		return errors.Wrap(execErr, "error inserting concert")
+	}
+
+	return nil
+}
+
+func (d *DbInterface) DeleteArtist(artistId int) error {
+	_, execErr := d.db.Exec("delete from artist where artist.id = ?;", artistId)
+	if execErr != nil {
+		return errors.Wrapf(execErr, "error deleting concert with id: %d", artistId)
+	}
+
+	return nil
+}
+
+func (d *DbInterface) DeleteVenue(venueId int) error {
+	_, execErr := d.db.Exec("delete from venue where venue.id = ?;", venueId)
+	if execErr != nil {
+		return errors.Wrapf(execErr, "error deleting venue with id: %d", venueId)
 	}
 
 	return nil

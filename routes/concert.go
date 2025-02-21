@@ -4,6 +4,7 @@ import (
 	"ConcertGetApp/dataTypes"
 	"ConcertGetApp/dbInterface"
 	"ConcertGetApp/helpers/cookieHelpers"
+	"ConcertGetApp/htmlTemplate"
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func NewConcert(w http.ResponseWriter, r *http.Request) {
+func Concert(w http.ResponseWriter, r *http.Request) {
 	username, _, _, readErr := cookieHelpers.ReadCookies(r)
 	if readErr != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -112,6 +113,20 @@ func NewConcert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//populate the rest of the page, what would be the GET method since that will happen after all the other methods as well
+
+	tmpl, err := htmlTemplate.GetTemplate("concert.gohtml")
+	if err != nil {
+		fmt.Printf("Error: %+v\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, nil)//data will need to be added to actually have data later once the corresponding .gohtml file is further built out.
+	if err != nil {
+		fmt.Printf("Error: %+v\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func getArtist(r *http.Request, dbI *dbInterface.DbInterface) (dataTypes.Artist, error, int) {

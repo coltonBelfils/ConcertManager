@@ -61,6 +61,8 @@ func main() {
 	http.HandleFunc("/logout", routes.Logout)
 	http.HandleFunc("/new-user", routes.NewUser)
 	http.HandleFunc("/artist", middleware.LoginCheck(routes.Artist))
+	http.HandleFunc("/venue", middleware.LoginCheck(routes.Venue))
+	http.HandleFunc("/concert", middleware.LoginCheck(routes.Concert))
 	http.HandleFunc("/form", middleware.LoginCheck(routes.Form))
 	http.HandleFunc("/validurl", middleware.LoginCheck(func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.Query().Get("url")

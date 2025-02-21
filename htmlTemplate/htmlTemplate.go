@@ -24,8 +24,6 @@ func GetTemplate(name string) (*template.Template, error) {
 
 	files = append(files, fmt.Sprintf("./static/%s", name))
 
-	fmt.Printf("templates: %+v\n", files)
-
 	var tmpl *template.Template
 
 	if t, ok := templates[name]; ok {

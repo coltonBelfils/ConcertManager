@@ -2,13 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Form</title>
+    <title>Concert Warehouse</title>
 </head>
 <body>
 {{ template "header" }}
 
 {{ template "nav-bar" }}
 
-placeholder
+<form id="deleteArtistForm" action="artist" method="post">
+    <input type="hidden" form="deleteArtistForm" name="crud" value="delete">
+    {{range .Artists}}
+        <div>
+            <input type="radio" id="selectedArtist-{{.Id}}" name="toDeleteArtist" value="{{.Id}}" form="deleteArtistForm">
+            <label for="selectedArtist-{{.Id}}">{{.Name}}</label>
+        </div>
+    {{end}}
+    <input type="submit" value="Submit">
+</form>
+
+<form id="newArtistForm" action="artist" method="post">
+    <input type="hidden" form="newArtistForm" name="crud" value="create">
+    <div id="newArtistField">
+        <label for="newArtist">New Artist</label>
+        <input type="text" id="newArtist" name="newArtist" form="newArtistForm" required>
+    </div>
+    <input type="submit" value="Submit">
+</form>
 </body>
 </html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Concert Warehouse</title>
+</head>
+<body>
+{{ template "header" }}
+
+{{ template "nav-bar" }}
+
+<form id="deleteVenueForm" action="venue" method="post">
+    <input type="hidden" form="deleteVenueForm" name="crud" value="delete">
+    {{range .Venues}}
+        <div>
+            <input type="radio" id="selectedVenue-{{.Id}}" name="toDeleteVenue" value="{{.Id}}" form="deleteVenueForm">
+            <label for="selectedVenue-{{.Id}}">{{.Name}}</label>
+        </div>
+    {{end}}
+    <input type="submit" value="Submit">
+</form>
+
+<form id="newVenueForm" action="venue" method="post">
+    <input type="hidden" form="newVenueForm" name="crud" value="create">
+    <div id="newVenueField">
+        <label for="newVenue">New Venue</label>
+        <input type="text" id="newVenue" name="newVenue" form="newVenueForm" required>
+    </div>
+    <input type="submit" value="Submit">
+</form>
+</body>
+</html>
